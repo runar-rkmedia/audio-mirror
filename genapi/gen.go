@@ -37,7 +37,8 @@ type (
 		Method string
 	}
 	GenAPI struct {
-		Name string
+		Name      string
+		CacheTime time.Duration
 		Endpoint
 		GenAPIOptions
 		EndpointSearchTitles *GenAPIEndpoint
@@ -79,6 +80,7 @@ func NewGeneralAPI(name string, baseEndpoint Endpoint, options GenAPIOptions) (*
 	}
 
 	return &GenAPI{
+		CacheTime:     time.Hour * 1440,
 		Name:          name,
 		Endpoint:      baseEndpoint,
 		GenAPIOptions: options,
@@ -226,7 +228,7 @@ func (g *GenAPI) getCache(keyPath string) ([]byte, bool) {
 		g.Name,
 		keyPath,
 	}
-	data, ok, err := g.Cache.Retrieve(keyPaths, time.Now().Add(-1*time.Hour))
+	data, ok, err := g.Cache.Retrieve(keyPaths, time.Now().Add(-1*g.CacheTime))
 	if err != nil {
 		g.Logger.Error("Failed to get cached item", slog.Any("error", err))
 		return nil, false
