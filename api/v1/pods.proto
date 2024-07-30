@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package api.v1;
+
+option go_package = "github.com/runar-rkmedia/audio-mirror/gen/api/v1;apiv1";
+
+message ChannelsRequest {
+  ChannelType type = 1;
+}
+
+enum ChannelType {
+  CHANNEL_TYPE_UNSPECIFIED = 0;
+  CHANNEL_TYPE_PODCAST = 1;
+  CHANNEL_TYPE_BOOKS = 2;
+}
+
+message Channel {
+  string id = 1;
+  ChannelType type = 2;
+  string title = 3;
+  string description = 4;
+  string image_url = 5;
+}
+
+message ChannelsResponse {
+  repeated Channel channels = 1;
+}
+
+service FeedService {
+  rpc GetChannels(ChannelsRequest) returns (ChannelsResponse) {}
+}
