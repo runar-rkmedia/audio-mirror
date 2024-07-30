@@ -223,12 +223,12 @@ type UntoldHero struct {
 }
 
 type UntoldPodcast struct {
-	Banner          Banner     `json:"banner"`
-	Cover           Banner     `json:"cover"`
+	Banner          Image      `json:"banner"`
+	Cover           Image      `json:"cover"`
 	Description     string     `json:"description"`
 	Frequency       *string    `json:"frequency,omitempty"`
-	Full            Banner     `json:"full"`
-	Hero            Banner     `json:"hero"`
+	Full            Image      `json:"full"`
+	Hero            Image      `json:"hero"`
 	ID              string     `json:"id"`
 	LastEpisodeDate *time.Time `json:"lastEpisodeDate"`
 	Name            string     `json:"name"`
@@ -236,7 +236,7 @@ type UntoldPodcast struct {
 	Producer        string     `json:"producer"`
 }
 
-type Banner struct {
+type Image struct {
 	Blurhash *string `json:"blurhash,omitempty"`
 	Lg       string  `json:"lg"`
 	Md       string  `json:"md"`
@@ -245,7 +245,7 @@ type Banner struct {
 
 type UntoldEpisode struct {
 	Author      Author        `json:"author"`
-	Cover       *Banner       `json:"cover"`
+	Cover       *Image        `json:"cover"`
 	Description string        `json:"description"`
 	Duration    int64         `json:"duration"`
 	Full        interface{}   `json:"full"`

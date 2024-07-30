@@ -11,7 +11,7 @@ import (
 )
 
 func CreateUntoldRss(ctx context.Context, podcast UntoldPodcast, episodes []UntoldEpisode) (rss.Rss, error) {
-	var mainImage Banner
+	var mainImage Image
 	switch {
 	case podcast.Cover.Lg != "":
 		mainImage = podcast.Cover
