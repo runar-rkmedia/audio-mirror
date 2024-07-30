@@ -1,0 +1,168 @@
+diff --git a/Makefile b/Makefile
+index 3909b0c..18c085c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,7 +2,7 @@ gen: ./api/v1/pods.proto ./buf.yaml ./buf.gen.yaml
+ 	buf lint
+ 	buf generate
+ 	go mod tidy
+-./frontend/node_modules/: ./frontend/bun.lockb ./frontend/package.json
++./frontend/node_modules: ./frontend/bun.lockb ./frontend/package.json
+ 	cd frontend && bun install
+ 	@touch ./frontend/node_modules
+ deps: ./frontend/node_modules
+@@ -15,6 +15,11 @@ watch_go:
+ 	fd --exclude frontend --exclude gen --exclude cache | entr -rc go run ./cmd/api
+ watch:
+ 	${MAKE} -j 3 watch_go watch_frontend watch_buf
++dep_bins:
++	go install github.com/bufbuild/buf/cmd/buf@latest
++	go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
++	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
++	go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest
+ 
+ 
+ 
+diff --git a/api/v1/pods.proto b/api/v1/pods.proto
+index f648211..effba95 100644
+--- a/api/v1/pods.proto
++++ b/api/v1/pods.proto
+@@ -4,28 +4,33 @@ package api.v1;
+ 
+ option go_package = "github.com/runar-rkmedia/audio-mirror/gen/api/v1;apiv1";
+ 
+-message ChannelsRequest {
++message GetChannelsRequest {
+   ChannelType type = 1;
+ }
+ 
+ enum ChannelType {
+   CHANNEL_TYPE_UNSPECIFIED = 0;
++  // Podcast-type
+   CHANNEL_TYPE_PODCAST = 1;
+-  CHANNEL_TYPE_BOOKS = 2;
++  // Audio-book
++  CHANNEL_TYPE_AUDIO_BOOK = 2;
+ }
+ 
++// Like a podcast or an audio-book
+ message Channel {
+   string id = 1;
+   ChannelType type = 2;
+   string title = 3;
+   string description = 4;
++  // The main image to use.
+   string image_url = 5;
+ }
+ 
+-message ChannelsResponse {
++message GetChannelsResponse {
+   repeated Channel channels = 1;
+ }
+ 
+ service FeedService {
+-  rpc GetChannels(ChannelsRequest) returns (ChannelsResponse) {}
++  // Returns a list of channels, like podcasts or audio-book.
++  rpc GetChannels(GetChannelsRequest) returns (GetChannelsResponse) {}
+ }
+diff --git a/buf.gen.yaml b/buf.gen.yaml
+index b26ec11..60292d3 100644
+--- a/buf.gen.yaml
++++ b/buf.gen.yaml
+@@ -6,12 +6,12 @@ plugins:
+   - local: protoc-gen-connect-go
+     out: gen
+     opt: paths=source_relative
+- # This will invoke protoc-gen-es and write output to src/gen
++  # This will invoke protoc-gen-es and write output to src/gen
+   - local: frontend/node_modules/.bin/protoc-gen-es
+     out: frontend/src/gen
+     opt: target=ts
+   # This will invoke protoc-gen-connect-es
+   - local: frontend/node_modules/.bin/protoc-gen-connect-es
+-    out: frondend/src/gen
++    out: frontend/src/gen
+     # Add more plugin options here
+     opt: target=ts
+diff --git a/cmd/api/main.go b/cmd/api/main.go
+index 857e300..2b50312 100644
+--- a/cmd/api/main.go
++++ b/cmd/api/main.go
+@@ -15,14 +15,21 @@ import (
+ 
+ type FeedServer struct{}
+ 
+-func (s *FeedServer) Channels(
++func (s *FeedServer) GetChannels(
+ 	ctx context.Context,
+-	req *connect.Request[apiv1.ChannelsRequest],
+-) (*connect.Response[apiv1.ChannelsResponse], error) {
++	req *connect.Request[apiv1.GetChannelsRequest],
++) (*connect.Response[apiv1.GetChannelsResponse], error) {
+ 	log.Println("Request headers: ", req.Header())
+-	res := connect.NewResponse(&apiv1.ChannelsResponse{
++	res := connect.NewResponse(&apiv1.GetChannelsResponse{
+ 		Channels: []*apiv1.Channel{},
+ 	})
++	res.Msg.Channels = append(res.Msg.Channels, &apiv1.Channel{
++		Id:          "abc",
++		Type:        apiv1.ChannelType_CHANNEL_TYPE_PODCAST,
++		Title:       "foobar",
++		Description: "yay",
++		ImageUrl:    "bob",
++	})
+ 	res.Header().Set("Greet-Version", "v1")
+ 	return res, nil
+ }
+diff --git a/cmd/rss.go b/cmd/rss.go
+index ad40727..270bc69 100644
+--- a/cmd/rss.go
++++ b/cmd/rss.go
+@@ -11,7 +11,7 @@ import (
+ )
+ 
+ func CreateUntoldRss(ctx context.Context, podcast UntoldPodcast, episodes []UntoldEpisode) (rss.Rss, error) {
+-	var mainImage Banner
++	var mainImage Image
+ 	switch {
+ 	case podcast.Cover.Lg != "":
+ 		mainImage = podcast.Cover
+diff --git a/cmd/untold.go b/cmd/untold.go
+index e138de3..b4e0afa 100644
+--- a/cmd/untold.go
++++ b/cmd/untold.go
+@@ -223,12 +223,12 @@ type UntoldHero struct {
+ }
+ 
+ type UntoldPodcast struct {
+-	Banner          Banner     `json:"banner"`
+-	Cover           Banner     `json:"cover"`
++	Banner          Image      `json:"banner"`
++	Cover           Image      `json:"cover"`
+ 	Description     string     `json:"description"`
+ 	Frequency       *string    `json:"frequency,omitempty"`
+-	Full            Banner     `json:"full"`
+-	Hero            Banner     `json:"hero"`
++	Full            Image      `json:"full"`
++	Hero            Image      `json:"hero"`
+ 	ID              string     `json:"id"`
+ 	LastEpisodeDate *time.Time `json:"lastEpisodeDate"`
+ 	Name            string     `json:"name"`
+@@ -236,7 +236,7 @@ type UntoldPodcast struct {
+ 	Producer        string     `json:"producer"`
+ }
+ 
+-type Banner struct {
++type Image struct {
+ 	Blurhash *string `json:"blurhash,omitempty"`
+ 	Lg       string  `json:"lg"`
+ 	Md       string  `json:"md"`
+@@ -245,7 +245,7 @@ type Banner struct {
+ 
+ type UntoldEpisode struct {
+ 	Author      Author        `json:"author"`
+-	Cover       *Banner       `json:"cover"`
++	Cover       *Image        `json:"cover"`
+ 	Description string        `json:"description"`
+ 	Duration    int64         `json:"duration"`
+ 	Full        interface{}   `json:"full"`
