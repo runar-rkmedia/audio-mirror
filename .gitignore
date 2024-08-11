@@ -99,3 +99,6 @@ $RECYCLE.BIN/
 
 .cache/
 feeds
+bk
+db.sqlite3
+samples

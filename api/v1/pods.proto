@@ -4,10 +4,6 @@ package api.v1;
 
 option go_package = "github.com/runar-rkmedia/audio-mirror/gen/api/v1;apiv1";
 
-message GetChannelsRequest {
-  ChannelType type = 1;
-}
-
 enum ChannelType {
   CHANNEL_TYPE_UNSPECIFIED = 0;
   // Podcast-type
@@ -24,13 +20,43 @@ message Channel {
   string description = 4;
   // The main image to use.
   string image_url = 5;
+  string episode_count = 6;
+  string feed_url = 7;
+}
+message Episode {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string sound_url = 4;
+  string image_url = 5;
 }
 
+message GetChannelsRequest {
+  ChannelType type = 1;
+}
 message GetChannelsResponse {
   repeated Channel channels = 1;
+}
+message GetChannelRequest {
+  // Id of channel
+  string id = 1;
+}
+message GetChannelResponse {
+  Channel channel = 1;
+  repeated Episode episodes = 2;
+}
+message GetEpisodesRequest {
+  // Id of channel
+  string id = 1;
+}
+message GetEpisodesResponse {
+  repeated Episode episodes = 1;
 }
 
 service FeedService {
   // Returns a list of channels, like podcasts or audio-book.
   rpc GetChannels(GetChannelsRequest) returns (GetChannelsResponse) {}
+  rpc GetChannel(GetChannelRequest) returns (GetChannelResponse) {}
+  // Returns a list of episodes, like podcasts or audio-book.
+  rpc GetEpisodes(GetEpisodesRequest) returns (GetEpisodesResponse) {}
 }

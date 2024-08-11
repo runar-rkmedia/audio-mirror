@@ -37,6 +37,144 @@ proto3.util.setEnumType(ChannelType, "api.v1.ChannelType", [
 ]);
 
 /**
+ * Like a podcast or an audio-book
+ *
+ * @generated from message api.v1.Channel
+ */
+export class Channel extends Message<Channel> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: api.v1.ChannelType type = 2;
+   */
+  type = ChannelType.UNSPECIFIED;
+
+  /**
+   * @generated from field: string title = 3;
+   */
+  title = "";
+
+  /**
+   * @generated from field: string description = 4;
+   */
+  description = "";
+
+  /**
+   * The main image to use.
+   *
+   * @generated from field: string image_url = 5;
+   */
+  imageUrl = "";
+
+  /**
+   * @generated from field: string episode_count = 6;
+   */
+  episodeCount = "";
+
+  /**
+   * @generated from field: string feed_url = 7;
+   */
+  feedUrl = "";
+
+  constructor(data?: PartialMessage<Channel>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "api.v1.Channel";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "type", kind: "enum", T: proto3.getEnumType(ChannelType) },
+    { no: 3, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "image_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "episode_count", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 7, name: "feed_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Channel {
+    return new Channel().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Channel {
+    return new Channel().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Channel {
+    return new Channel().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Channel | PlainMessage<Channel> | undefined, b: Channel | PlainMessage<Channel> | undefined): boolean {
+    return proto3.util.equals(Channel, a, b);
+  }
+}
+
+/**
+ * @generated from message api.v1.Episode
+ */
+export class Episode extends Message<Episode> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string title = 2;
+   */
+  title = "";
+
+  /**
+   * @generated from field: string description = 3;
+   */
+  description = "";
+
+  /**
+   * @generated from field: string sound_url = 4;
+   */
+  soundUrl = "";
+
+  /**
+   * @generated from field: string image_url = 5;
+   */
+  imageUrl = "";
+
+  constructor(data?: PartialMessage<Episode>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "api.v1.Episode";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "sound_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "image_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Episode {
+    return new Episode().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Episode {
+    return new Episode().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Episode {
+    return new Episode().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Episode | PlainMessage<Episode> | undefined, b: Episode | PlainMessage<Episode> | undefined): boolean {
+    return proto3.util.equals(Episode, a, b);
+  }
+}
+
+/**
  * @generated from message api.v1.GetChannelsRequest
  */
 export class GetChannelsRequest extends Message<GetChannelsRequest> {
@@ -74,71 +212,6 @@ export class GetChannelsRequest extends Message<GetChannelsRequest> {
 }
 
 /**
- * Like a podcast or an audio-book
- *
- * @generated from message api.v1.Channel
- */
-export class Channel extends Message<Channel> {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id = "";
-
-  /**
-   * @generated from field: api.v1.ChannelType type = 2;
-   */
-  type = ChannelType.UNSPECIFIED;
-
-  /**
-   * @generated from field: string title = 3;
-   */
-  title = "";
-
-  /**
-   * @generated from field: string description = 4;
-   */
-  description = "";
-
-  /**
-   * The main image to use.
-   *
-   * @generated from field: string image_url = 5;
-   */
-  imageUrl = "";
-
-  constructor(data?: PartialMessage<Channel>) {
-    super();
-    proto3.util.initPartial(data, this);
-  }
-
-  static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "api.v1.Channel";
-  static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "type", kind: "enum", T: proto3.getEnumType(ChannelType) },
-    { no: 3, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 4, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 5, name: "image_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-  ]);
-
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Channel {
-    return new Channel().fromBinary(bytes, options);
-  }
-
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Channel {
-    return new Channel().fromJson(jsonValue, options);
-  }
-
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Channel {
-    return new Channel().fromJsonString(jsonString, options);
-  }
-
-  static equals(a: Channel | PlainMessage<Channel> | undefined, b: Channel | PlainMessage<Channel> | undefined): boolean {
-    return proto3.util.equals(Channel, a, b);
-  }
-}
-
-/**
  * @generated from message api.v1.GetChannelsResponse
  */
 export class GetChannelsResponse extends Message<GetChannelsResponse> {
@@ -172,6 +245,164 @@ export class GetChannelsResponse extends Message<GetChannelsResponse> {
 
   static equals(a: GetChannelsResponse | PlainMessage<GetChannelsResponse> | undefined, b: GetChannelsResponse | PlainMessage<GetChannelsResponse> | undefined): boolean {
     return proto3.util.equals(GetChannelsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message api.v1.GetChannelRequest
+ */
+export class GetChannelRequest extends Message<GetChannelRequest> {
+  /**
+   * Id of channel
+   *
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  constructor(data?: PartialMessage<GetChannelRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "api.v1.GetChannelRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetChannelRequest {
+    return new GetChannelRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetChannelRequest {
+    return new GetChannelRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetChannelRequest {
+    return new GetChannelRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetChannelRequest | PlainMessage<GetChannelRequest> | undefined, b: GetChannelRequest | PlainMessage<GetChannelRequest> | undefined): boolean {
+    return proto3.util.equals(GetChannelRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message api.v1.GetChannelResponse
+ */
+export class GetChannelResponse extends Message<GetChannelResponse> {
+  /**
+   * @generated from field: api.v1.Channel channel = 1;
+   */
+  channel?: Channel;
+
+  /**
+   * @generated from field: repeated api.v1.Episode episodes = 2;
+   */
+  episodes: Episode[] = [];
+
+  constructor(data?: PartialMessage<GetChannelResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "api.v1.GetChannelResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "channel", kind: "message", T: Channel },
+    { no: 2, name: "episodes", kind: "message", T: Episode, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetChannelResponse {
+    return new GetChannelResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetChannelResponse {
+    return new GetChannelResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetChannelResponse {
+    return new GetChannelResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetChannelResponse | PlainMessage<GetChannelResponse> | undefined, b: GetChannelResponse | PlainMessage<GetChannelResponse> | undefined): boolean {
+    return proto3.util.equals(GetChannelResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message api.v1.GetEpisodesRequest
+ */
+export class GetEpisodesRequest extends Message<GetEpisodesRequest> {
+  /**
+   * Id of channel
+   *
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  constructor(data?: PartialMessage<GetEpisodesRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "api.v1.GetEpisodesRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetEpisodesRequest {
+    return new GetEpisodesRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetEpisodesRequest {
+    return new GetEpisodesRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetEpisodesRequest {
+    return new GetEpisodesRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetEpisodesRequest | PlainMessage<GetEpisodesRequest> | undefined, b: GetEpisodesRequest | PlainMessage<GetEpisodesRequest> | undefined): boolean {
+    return proto3.util.equals(GetEpisodesRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message api.v1.GetEpisodesResponse
+ */
+export class GetEpisodesResponse extends Message<GetEpisodesResponse> {
+  /**
+   * @generated from field: repeated api.v1.Episode episodes = 1;
+   */
+  episodes: Episode[] = [];
+
+  constructor(data?: PartialMessage<GetEpisodesResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "api.v1.GetEpisodesResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "episodes", kind: "message", T: Episode, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetEpisodesResponse {
+    return new GetEpisodesResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetEpisodesResponse {
+    return new GetEpisodesResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetEpisodesResponse {
+    return new GetEpisodesResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetEpisodesResponse | PlainMessage<GetEpisodesResponse> | undefined, b: GetEpisodesResponse | PlainMessage<GetEpisodesResponse> | undefined): boolean {
+    return proto3.util.equals(GetEpisodesResponse, a, b);
   }
 }
 

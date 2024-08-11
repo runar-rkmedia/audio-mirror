@@ -35,18 +35,27 @@ const (
 const (
 	// FeedServiceGetChannelsProcedure is the fully-qualified name of the FeedService's GetChannels RPC.
 	FeedServiceGetChannelsProcedure = "/api.v1.FeedService/GetChannels"
+	// FeedServiceGetChannelProcedure is the fully-qualified name of the FeedService's GetChannel RPC.
+	FeedServiceGetChannelProcedure = "/api.v1.FeedService/GetChannel"
+	// FeedServiceGetEpisodesProcedure is the fully-qualified name of the FeedService's GetEpisodes RPC.
+	FeedServiceGetEpisodesProcedure = "/api.v1.FeedService/GetEpisodes"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
 	feedServiceServiceDescriptor           = v1.File_api_v1_pods_proto.Services().ByName("FeedService")
 	feedServiceGetChannelsMethodDescriptor = feedServiceServiceDescriptor.Methods().ByName("GetChannels")
+	feedServiceGetChannelMethodDescriptor  = feedServiceServiceDescriptor.Methods().ByName("GetChannel")
+	feedServiceGetEpisodesMethodDescriptor = feedServiceServiceDescriptor.Methods().ByName("GetEpisodes")
 )
 
 // FeedServiceClient is a client for the api.v1.FeedService service.
 type FeedServiceClient interface {
 	// Returns a list of channels, like podcasts or audio-book.
 	GetChannels(context.Context, *connect.Request[v1.GetChannelsRequest]) (*connect.Response[v1.GetChannelsResponse], error)
+	GetChannel(context.Context, *connect.Request[v1.GetChannelRequest]) (*connect.Response[v1.GetChannelResponse], error)
+	// Returns a list of episodes, like podcasts or audio-book.
+	GetEpisodes(context.Context, *connect.Request[v1.GetEpisodesRequest]) (*connect.Response[v1.GetEpisodesResponse], error)
 }
 
 // NewFeedServiceClient constructs a client for the api.v1.FeedService service. By default, it uses
@@ -65,12 +74,26 @@ func NewFeedServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(feedServiceGetChannelsMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		getChannel: connect.NewClient[v1.GetChannelRequest, v1.GetChannelResponse](
+			httpClient,
+			baseURL+FeedServiceGetChannelProcedure,
+			connect.WithSchema(feedServiceGetChannelMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		getEpisodes: connect.NewClient[v1.GetEpisodesRequest, v1.GetEpisodesResponse](
+			httpClient,
+			baseURL+FeedServiceGetEpisodesProcedure,
+			connect.WithSchema(feedServiceGetEpisodesMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // feedServiceClient implements FeedServiceClient.
 type feedServiceClient struct {
 	getChannels *connect.Client[v1.GetChannelsRequest, v1.GetChannelsResponse]
+	getChannel  *connect.Client[v1.GetChannelRequest, v1.GetChannelResponse]
+	getEpisodes *connect.Client[v1.GetEpisodesRequest, v1.GetEpisodesResponse]
 }
 
 // GetChannels calls api.v1.FeedService.GetChannels.
@@ -78,10 +101,23 @@ func (c *feedServiceClient) GetChannels(ctx context.Context, req *connect.Reques
 	return c.getChannels.CallUnary(ctx, req)
 }
 
+// GetChannel calls api.v1.FeedService.GetChannel.
+func (c *feedServiceClient) GetChannel(ctx context.Context, req *connect.Request[v1.GetChannelRequest]) (*connect.Response[v1.GetChannelResponse], error) {
+	return c.getChannel.CallUnary(ctx, req)
+}
+
+// GetEpisodes calls api.v1.FeedService.GetEpisodes.
+func (c *feedServiceClient) GetEpisodes(ctx context.Context, req *connect.Request[v1.GetEpisodesRequest]) (*connect.Response[v1.GetEpisodesResponse], error) {
+	return c.getEpisodes.CallUnary(ctx, req)
+}
+
 // FeedServiceHandler is an implementation of the api.v1.FeedService service.
 type FeedServiceHandler interface {
 	// Returns a list of channels, like podcasts or audio-book.
 	GetChannels(context.Context, *connect.Request[v1.GetChannelsRequest]) (*connect.Response[v1.GetChannelsResponse], error)
+	GetChannel(context.Context, *connect.Request[v1.GetChannelRequest]) (*connect.Response[v1.GetChannelResponse], error)
+	// Returns a list of episodes, like podcasts or audio-book.
+	GetEpisodes(context.Context, *connect.Request[v1.GetEpisodesRequest]) (*connect.Response[v1.GetEpisodesResponse], error)
 }
 
 // NewFeedServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -96,10 +132,26 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(feedServiceGetChannelsMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	feedServiceGetChannelHandler := connect.NewUnaryHandler(
+		FeedServiceGetChannelProcedure,
+		svc.GetChannel,
+		connect.WithSchema(feedServiceGetChannelMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	feedServiceGetEpisodesHandler := connect.NewUnaryHandler(
+		FeedServiceGetEpisodesProcedure,
+		svc.GetEpisodes,
+		connect.WithSchema(feedServiceGetEpisodesMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/api.v1.FeedService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case FeedServiceGetChannelsProcedure:
 			feedServiceGetChannelsHandler.ServeHTTP(w, r)
+		case FeedServiceGetChannelProcedure:
+			feedServiceGetChannelHandler.ServeHTTP(w, r)
+		case FeedServiceGetEpisodesProcedure:
+			feedServiceGetEpisodesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -111,4 +163,12 @@ type UnimplementedFeedServiceHandler struct{}
 
 func (UnimplementedFeedServiceHandler) GetChannels(context.Context, *connect.Request[v1.GetChannelsRequest]) (*connect.Response[v1.GetChannelsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.v1.FeedService.GetChannels is not implemented"))
+}
+
+func (UnimplementedFeedServiceHandler) GetChannel(context.Context, *connect.Request[v1.GetChannelRequest]) (*connect.Response[v1.GetChannelResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.v1.FeedService.GetChannel is not implemented"))
+}
+
+func (UnimplementedFeedServiceHandler) GetEpisodes(context.Context, *connect.Request[v1.GetEpisodesRequest]) (*connect.Response[v1.GetEpisodesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.v1.FeedService.GetEpisodes is not implemented"))
 }
