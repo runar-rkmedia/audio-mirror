@@ -3,17 +3,16 @@ package main
 import (
 	"context"
 	"encoding/xml"
-	"flag"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 
-	"github.com/kennygrant/sanitize"
 	"github.com/mattn/go-colorable"
 	"github.com/runar-rkmedia/audio-mirror/cache"
 	"github.com/runar-rkmedia/audio-mirror/genapi"
+	untold "github.com/runar-rkmedia/audio-mirror/genapi/apiuntold"
 	"hypera.dev/lib/slog/pretty"
 )
 
@@ -23,8 +22,6 @@ func Fatal(msg string, args ...any) {
 }
 
 func main() {
-	query := flag.String("query", "", "Set to search")
-	flag.Parse()
 	opts := &pretty.Options{
 		Level:     slog.LevelDebug,
 		AddSource: true,
@@ -52,49 +49,26 @@ func main() {
 	if untoldToken == "" {
 		Fatal("UNTOLD_TOKEN not set, quitting")
 	}
-	untold, err := NewUntoldAPI(untoldToken, genOptions)
+	options := untold.UntoldAPIOptions{
+		GenAPIOptions: genOptions,
+		Token:         untoldToken,
+	}
+	untold, err := untold.NewUntoldAPI(options)
 	if err != nil {
 		Fatal("failed to create general api", slog.Any("error", err))
 	}
-	podcasts, errs := untold.FindAllPodcasts(ctx)
+	podcasts, errs := untold.FindAllChannels(ctx)
 	if errs != nil {
 		untold.Logger.Error("failed to find all pordcasts", slog.Any("error", err))
 	}
 	os.MkdirAll("./feeds", 0755)
-	if *query != "" {
-		searchResult, _, _ := untold.SearchTitles(ctx, *query)
-		// for _, podCast := range searchResult {
-		// 	fmt.Println(podCast.Name)
-		// }
-		podcasts = append(podcasts, searchResult...)
-		for _, podCast := range podcasts {
-			l := untold.Logger.With(
-				slog.String("podcast-name", podCast.Name),
-			)
-			l.Info("Fetching episodes for podcast")
-			episodes, _, _ := untold.ListEpisodes(ctx, podCast.ID)
-			rss, err := CreateUntoldRss(ctx, podCast, episodes)
+	for _, v := range podcasts {
+		for _, rsschannel := range v.Channels {
+			XML, err := xml.MarshalIndent(rsschannel.Channel, "", "  ")
 			if err != nil {
-				l.Error("Failed to create rss-feed", slog.Any("error", err))
-				break
+				untold.Logger.Error("Failed to write xml for feed", slog.Any("error", err))
 			}
-			l = untold.Logger.With(
-				slog.Int("episode-count", len(episodes)),
-			)
-			x, err := xml.MarshalIndent(rss, "", "  ")
-			if err != nil {
-				l.Error("Failed to marshal rss-feed", slog.Any("error", err))
-				break
-			}
-			sane := sanitize.BaseName(podCast.Name)
-			filePath := path.Join("./feeds", sane)
-			l = l.With(slog.String("filepath", filePath), slog.Int("size", len(x)))
-			err = os.WriteFile(filePath, x, 0644)
-			if err != nil {
-				l.Error("Failed to write rss-file", slog.Any("error", err))
-				break
-			}
-			l.Debug("Wrote rss-file")
+			fmt.Println(string(XML))
 		}
 	}
 }

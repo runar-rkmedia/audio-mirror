@@ -18,6 +18,7 @@ type cache struct {
 }
 
 func NewCache(baseDir string) *cache {
+	fmt.Println("fofo")
 	return &cache{baseDir}
 }
 
@@ -27,6 +28,7 @@ func (c *cache) Retrieve(keyPaths []string, changedAfter time.Time) ([]byte, boo
 		return nil, false, err
 	}
 	f, err := os.Open(filePath)
+	fmt.Println("fif", filePath, err)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return nil, false, nil
@@ -35,6 +37,7 @@ func (c *cache) Retrieve(keyPaths []string, changedAfter time.Time) ([]byte, boo
 	}
 	defer f.Close()
 	stat, err := f.Stat()
+	fmt.Println("fif", filePath, stat, err)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return nil, false, nil

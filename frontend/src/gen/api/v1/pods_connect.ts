@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { GetChannelsRequest, GetChannelsResponse } from "./pods_pb.js";
+import { GetChannelRequest, GetChannelResponse, GetChannelsRequest, GetChannelsResponse, GetEpisodesRequest, GetEpisodesResponse } from "./pods_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -21,6 +21,26 @@ export const FeedService = {
       name: "GetChannels",
       I: GetChannelsRequest,
       O: GetChannelsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc api.v1.FeedService.GetChannel
+     */
+    getChannel: {
+      name: "GetChannel",
+      I: GetChannelRequest,
+      O: GetChannelResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Returns a list of episodes, like podcasts or audio-book.
+     *
+     * @generated from rpc api.v1.FeedService.GetEpisodes
+     */
+    getEpisodes: {
+      name: "GetEpisodes",
+      I: GetEpisodesRequest,
+      O: GetEpisodesResponse,
       kind: MethodKind.Unary,
     },
   }
